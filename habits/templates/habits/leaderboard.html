@@ -1,0 +1,18 @@
+{% extends 'habits/base.html' %}
+{% block content %}
+<h4>Leaderboard</h4>
+<table class="table">
+  <thead>
+    <tr><th>Rank</th><th>User</th><th>Points</th></tr>
+  </thead>
+  <tbody>
+    {% for p in profiles %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ p.user.username }}</td>
+      <td>{{ p.points }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

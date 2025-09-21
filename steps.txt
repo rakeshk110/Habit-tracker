@@ -1,7 +1,10 @@
-1. Creating folder stucture and crated venv and installed django and mysqlclient
-2. In Mysql workbench created database setup with user setup 
-3. Created the new app habits and added it in setting.py and database configurations
-4. Created templates and static folders and added it in setting.py 
-5. Created tables for Profile, Badge, userBadge, Habit, HabitLog and logics for the tables
-6. Created signals.py in habit app and registered it in app.py and created logic to receive signals
-7. Registered the habit apps all tables for admin page in admin.py
+1.  Creating folder stucture and crated venv and installed django and mysqlclient
+2.  In Mysql workbench created database setup with user setup 
+3.  Created the new app habits and added it in setting.py and database configurations
+4.  Created templates and static folders and added it in setting.py 
+5.  Created tables for Profile, Badge, userBadge, Habit, HabitLog and logics for the tables
+6.  Created signals.py in habit app and registered it in app.py and created logic to receive signals
+7.  Registered the habit apps all tables for admin page in admin.py
+8.  Created forms for Habit and Signup page
+9.  Create urls base urls for habit.urls and django.contrib.auth.urls
+10. 

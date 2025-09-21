@@ -78,11 +78,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'habit_db',
         'USER': 'habituser',
-        'PASSWORD': 'Rakesh3067#',
-        'HOST':'localhost',
-        'PORT':'3306',
+        'PASSWORD': 'rakesh',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
+
 
 
 # Password validation
