@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.http import JsonResponse
 from datetime import date, timedelta
 from .models import Habit, HabitLog, Profile, Badge, UserBadge
@@ -33,7 +33,7 @@ def dashboard(request):
     for i in range(6, -1, -1):
         d = today - timedelta(days=i)
         days.append(d.strftime('%a'))
-    counts.append(HabitLog.objects.filter(habit=request.user, date=d, completed=True).count())
+    counts.append(HabitLog.objects.filter(habit__user=request.user, date=d, completed=True).count())
     context = {
         'habits': habits,
         'profile': profile,
@@ -52,9 +52,9 @@ def habit_create(request):
             habit.user = request.user
             habit.save()
             return redirect('dashboard')
-        else:
-            form = HabitForm()
-        return render(request, 'habits/habit_form.html', {'form': form})
+    else:
+        form = HabitForm()
+    return render(request, 'habits/habit_form.html', {'form': form})
 @login_required
 def habit_update(request, pk):
     habit = get_object_or_404(Habit, pk=pk, user=request.user)
@@ -95,7 +95,7 @@ def mark_complete(request):
     profile.update_level()
     profile.save()
 
-    streak = habit.current_streack()
+    streak = habit.current_streak()
 
     awarded = []
     streak_badges = Badge.objects.filter(streak_required__isnull=False, streak_required__lte=streak)
@@ -103,21 +103,21 @@ def mark_complete(request):
         ub, ub_created = UserBadge.objects.get_or_create(user=request.user, badge=b)
         if ub_created:
             awarded.append(b.name)
-        points_badge = Badge.objects.filter(points_required__isnull=False, points_required_lte=profile.points)
-        for b in points_badge:
-            ub, ub_created = UserBadge.objects.get_or_create(user=request.user, badge=b)
-            if ub_created:
-                awarded.append(b.name)
-            data = {
-                'status' : 'ok',
-                'points' : profile.points,
-                'level' : profile.level,
-                'status' : streak,
-                'status' : awarded,
+    points_badge = Badge.objects.filter(points_required__isnull=False, points_required__lte=profile.points)
+    for b in points_badge:
+        ub, ub_created = UserBadge.objects.get_or_create(user=request.user, badge=b)
+        if ub_created:
+            awarded.append(b.name)
+    data = {
+            'status' : 'ok',
+            'points' : profile.points,
+            'level' : profile.level,
+            'streak' : streak,
+            'awaeded' : awarded,
             }
-        return JsonResponse(data)
+    return JsonResponse(data)
     
 @login_required
 def leaderboard(request):
-    top_profiles = Profile.objects.selcet_related('user').order_by('-points')[:10]
+    top_profiles = Profile.objects.select_related('user').order_by('-points')[:10]
     return render(request, 'habits/leaderboard.html', {'profiles': top_profiles})
