@@ -138,3 +138,5 @@ TEMPLATES[0]['DIRS'] = [BASE_DIR/ 'templates']
 
 TIME_ZONE = 'Asia/Kolkata'
 USE_TZ = True
+
+LOGOUT_REDIRECT_URL = '/'

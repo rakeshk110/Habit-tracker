@@ -4,22 +4,51 @@ from django.contrib.auth import login, authenticate, logout
 from django.http import JsonResponse
 from datetime import date, timedelta
 from .models import Habit, HabitLog, Profile, Badge, UserBadge
-from .forms import HabitForm, SignUpForm
+from .forms import HabitForm
+from django.contrib.auth.models import User
 
-
-def signup_view(request):
+def LoginView(request):
+    context = {
+        'error':''
+    }
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=raw_password)
+        user = authenticate(username=request.POST['username'],password=request.POST['password'])
+        if user is not None:
             login(request, user)
             return redirect('dashboard')
-    else:
-        form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form':form})
+        else:
+            context = {
+            'error':'* User or Password not exists'
+            }
+            return render(request, 'registration/login.html', context)
+
+    return render(request, 'registration/login.html', context)
+
+def LogoutView(request):
+    logout(request)
+    return redirect('/')
+    
+def signup_view(request):
+    if request.method == 'POST':
+        user = User(username=request.POST['username'], email=request.POST['email'])
+        user.set_password(request.POST['password'])
+        user.save()
+        new_user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        if new_user is not None:
+            login(request, new_user)
+            return redirect('dashboard')
+    #     form = SignUpForm(request.POST)
+    #     if form.is_valid():
+    #         user = form.save()
+    #         username = form.cleaned_data.get('username')
+    #         raw_password = form.cleaned_data.get('password')
+    #         user = authenticate(username=username, password=raw_password)
+    #         login(request, user)
+    #         return redirect('dashboard')
+    
+    # form = SignUpForm()
+    # return render(request, 'registration/signup.html', {'form':form})
+    return render(request, 'registration/signup.html')
 
 @login_required
 def dashboard(request):
@@ -121,3 +150,4 @@ def mark_complete(request):
 def leaderboard(request):
     top_profiles = Profile.objects.select_related('user').order_by('-points')[:10]
     return render(request, 'habits/leaderboard.html', {'profiles': top_profiles})
+
